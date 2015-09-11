@@ -1,6 +1,5 @@
 import ejson
 
-
 class Message(object):
     """
     """
@@ -51,7 +50,7 @@ class Connected(Message):
 
 class Failed(Message):
     _serialize_args = ("version",)
-    def __init__(self, version):
+    def __init__(self, version='1.0'):
         """
         version: string (a suggested protocol version to connect with)
         """
@@ -258,20 +257,8 @@ def deserialize(msg_raw):
     msg = ejson.loads(msg_raw)
     msg_type = msg.get("msg", False)
     if not msg_type:
-        raise
+        raise Exception("No message type specified")
     if msg_type not in msg_types:
-        raise
+        raise Exception("Invalid message type")
     obj = msg_types[msg_type]
     return obj(*[msg[arg] for arg in obj._serialize_args])
-
-if __name__ == '__main__':
-    ping_obj = Ping("blee")
-    print ping_obj
-    ping_raw = serialize(ping_obj)
-    print ping_raw
-    ping_obj = deserialize(ping_raw)
-    print ping_obj
-    ping_raw = serialize(ping_obj)
-    print ping_raw
-
-
