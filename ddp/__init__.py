@@ -1,3 +1,3 @@
 import ddp
-import client
-import server
+from client import Client
+from server import Server

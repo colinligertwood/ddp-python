@@ -13,115 +13,120 @@ class Handler(tornado.websocket.WebSocketHandler):
     sessions = {}
     session_id = None
 
+    def write_message(self, message):
+        print "sending message:", message
+        super(Handler, self).write_message(message)
 
     # Send Message Events
-    def on_connect(self, *args, **kwargs):
+    def send_connect(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_connected(self, session):
+    def send_connected(self, session):
         message = ddp.Connected(session)
+        self.write_message(ddp.serialize(message))
 
-    def on_failed(self, *args, **kwargs):
-        message = ddp.Failed()
-        self.send_message(message)
+    def send_failed(self, *args, **kwargs):
+        self.write_message(ddp.serialize(ddp.Failed()))
 
-    def on_ping(self, *args, **kwargs):
+    def send_ping(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_pong(self, *args, **kwargs):
+    def send_pong(self, id):
+        message = ddp.Pong(id)
+        self.write_message(ddp.serialize(message))
+
+    def send_sub(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_sub(self, *args, **kwargs):
+    def send_unsub(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_unsub(self, *args, **kwargs):
+    def send_nosub(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_nosub(self, *args, **kwargs):
+    def send_added(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_added(self, *args, **kwargs):
+    def send_changed(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_changed(self, *args, **kwargs):
+    def send_removed(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_removed(self, *args, **kwargs):
+    def send_added_before(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_added_before(self, *args, **kwargs):
+    def send_moved_before(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_moved_before(self, *args, **kwargs):
+    def send_method(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_method(self, *args, **kwargs):
+    def send_result(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def on_result(self, *args, **kwargs):
-        raise NotImplementedError()
-
-    def on_updated(self, *args, **kwargs):
+    def send_updated(self, *args, **kwargs):
         raise NotImplementedError()
 
 
     # Received Message event Handlers
-    def on_msg_connect(self, message):
+    def on_connect(self, message):
         if message.session:
             if message.session in self.sessions:
                 self.session_id = message.session
                 self.session = self.sessions[message.session]
-                self.on_connected(self.session_id)
+                self.send_connected(self.session_id)
             else:
-                self.on_failed()
+                self.send_failed()
         else:
-            self.session_id = uuid.uuid4()
-        
-        self.on_connected(self.session_id)
+            self.session_id = str(uuid.uuid4())
+            self.sessions[self.session_id] = {}
+            self.session = self.sessions[self.session_id]
+            self.send_connected(self.session_id)
     
-    def on_msg_connected(self, message):
+    def on_connected(self, message):
         raise NotImplementedError()
         
-    def on_msg_failed(self, message):
+    def on_failed(self, message):
         raise NotImplementedError()
     
-    def on_msg_ping(self, message):
-        raise NotImplementedError()
+    def on_ping(self, message):
+        self.send_pong(message.id)
         
-    def on_msg_pong(self, message):
+    def on_pong(self, message):
         raise NotImplementedError()
 
-    def on_msg_sub(self, message):
+    def on_sub(self, message):
         raise NotImplementedError()
 
-    def on_msg_unsub(self, message):
+    def on_unsub(self, message):
         raise NotImplementedError()
 
-    def on_msg_added(self, message):
+    def on_added(self, message):
         raise NotImplementedError()
 
-    def on_msg_changed(self, message):
+    def on_changed(self, message):
         raise NotImplementedError()
 
-    def on_msg_removed(self, message):
+    def on_removed(self, message):
         raise NotImplementedError()
 
-    def on_msg_ready(self, message):
+    def on_ready(self, message):
         raise NotImplementedError()
 
-    def on_msg_added_before(self, message):
+    def on_added_before(self, message):
         raise NotImplementedError()
 
-    def on_msg_moved_before(self, message):
+    def on_moved_before(self, message):
         raise NotImplementedError()
 
-    def on_msg_method(self, message):
+    def on_method(self, message):
         raise NotImplementedError()
 
-    def on_msg_result(self, message):
+    def on_result(self, message):
         raise NotImplementedError()
 
-    def on_msg_updated(self, message):
+    def on_updated(self, message):
         raise NotImplementedError()
 
     # Core Websockets Event Handlers
@@ -130,41 +135,42 @@ class Handler(tornado.websocket.WebSocketHandler):
         DDP Deserialize the message and pass it on to the
         appropriate received message handler.
         """
+        print "received message: ", message
         message = ddp.deserialize(message)
         if message.msg == 'connect':
-            self.on_msg_connect(msg)
+            self.on_connect(message)
         elif message.msg == 'connected':
-            self.on_msg_connected(msg)
+            self.on_connected(message)
         elif message.msg == 'failed':
-            self.on_msg_failed(msg)
+            self.on_failed(message)
         elif message.msg == 'ping':
-            self.on_msg_ping(msg)
+            self.on_ping(message)
         elif message.msg == 'pong':
-            self.on_msg_pong(msg)
+            self.on_pong(message)
         elif message.msg == 'sub':
-            self.on_msg_sub(msg)
+            self.on_sub(message)
         elif message.msg == 'unsub':
-            self.on_msg_unsub(msg)
+            self.on_unsub(message)
         elif message.msg == 'nosub':
-            self.on_msg_nosub(msg)
+            self.on_nosub(message)
         elif message.msg == 'added':
-            self.on_msg_added(msg)
+            self.on_added(message)
         elif message.msg == 'changed':
-            self.on_msg_changed(msg)
+            self.on_changed(message)
         elif message.msg == 'removed':
-            self.on_msg_removed(msg)
+            self.on_removed(message)
         elif message.msg == 'ready':
-            self.on_msg_ready(msg)
+            self.on_ready(message)
         elif message.msg == 'addedBefore':
-            self.on_msg_added_before(msg)
+            self.on_added_before(message)
         elif message.msg == 'movedBefore':
-            self.on_msg_moved_before(msg)
+            self.on_moved_before(message)
         elif message.msg == 'method':
-            self.on_msg_method(msg)
+            self.on_method(message)
         elif message.msg == 'result':
-            self.on_msg_result(msg)
+            self.on_result(message)
         elif message.msg == 'updated':
-            self.on_msg_updated(msg)
+            self.on_updated(message)
 
     def check_origin(self, origin):
         """
