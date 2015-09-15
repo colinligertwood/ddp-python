@@ -1,10 +1,12 @@
 import ejson
+from exceptions import NotImplementedError
 
 class Subscription(object):
     """
     """
 
-    def __init__(self, session, name):
+    def __init__(self, name, session):
+       self.active = True
        self.ids = []
        self.session = session
        self.name = name
@@ -20,6 +22,35 @@ class Subscription(object):
 
     def reset_ids(self):
         self.ids = []
+
+    def start(self):
+        self.active = True
+
+    def stop(self):
+        self.active = False
+
+
+class Publication(object):
+    """
+    This isn't in use yet, since I don't plan on publishing
+    collections directly atm.
+    """
+
+    def __init__(self, name):
+        self.active = True
+        self.name = name
+
+    def start(self):
+        self.active = True
+
+    def stop(self):
+        self.active = False
+
+    def collection(self):
+        raise NotImplementedError()
+
+    def methods(self):
+        raise NotImplementedError()
 
 
 class Message(object):
