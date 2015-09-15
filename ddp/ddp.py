@@ -7,21 +7,21 @@ class Subscription(object):
 
     def __init__(self, name, session):
        self.active = True
-       self.ids = []
+       self.recs = []
        self.session = session
        self.name = name
 
-    def has_id(self, id):
-        return id in ids
+    def has_rec(self, collection, id):
+        return (collection,id) in recs
 
-    def add_id(self, id):
-        self.ids.append(id)
+    def add_rec(self, collection, id):
+        self.ids.append((collection,id))
 
-    def remove_id(self, id):
-        self.ids.remove(id)
+    def remove_rec(self, collection, id):
+        self.recs.remove((collection,id))
 
-    def reset_ids(self):
-        self.ids = []
+    def reset_recs(self):
+        self.recs = []
 
     def start(self):
         self.active = True
@@ -315,3 +315,4 @@ def deserialize(msg_raw):
         raise Exception("Invalid message type")
     obj = msg_types[msg_type]
     return obj(*[msg[arg] for arg in obj._serialize_args])
+
