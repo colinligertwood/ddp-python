@@ -22,7 +22,7 @@ class Client(object):
         return self.send_recv(ddp.Connect(session, protocol, [protocol]))
 
 if __name__ == "__main__":
-    client = Client("ws://localhost:9999/ddp")
+    client = Client("ws://sys-colin-zerp6:9999/ddp")
     rcvd_obj = client.connect()
     print rcvd_obj
 
@@ -32,4 +32,7 @@ if __name__ == "__main__":
 
     # Send a ping
     print client.send_recv(ddp.Ping("yummy"))
+
+    # subscribe to product.product
+    print client.send_recv(ddp.Sub("product.product", {}))
 

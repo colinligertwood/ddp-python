@@ -1,5 +1,27 @@
 import ejson
 
+class Subscription(object):
+    """
+    """
+
+    def __init__(self, session, name):
+       self.ids = []
+       self.session = session
+       self.name = name
+
+    def has_id(self, id):
+        return id in ids
+
+    def add_id(self, id):
+        self.ids.append(id)
+
+    def remove_id(self, id):
+        self.ids.remove(id)
+
+    def reset_ids(self):
+        self.ids = []
+
+
 class Message(object):
     """
     """
