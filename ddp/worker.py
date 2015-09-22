@@ -1,15 +1,17 @@
 import threading
+from globals import *
 
 class Worker(threading.Thread):
     """
     """
 
-    def __init__(self, queue, subscriptions):
-        self.queue = queue
-        self.subscriptions = subscriptions
+    def __init__(self):
         self.active = True
 
     def start(self):
+        global ddp_message_queue
+        global ddp_subscriptions
+
         while self.active:
             message = self.queue.get()
             if message.msg in ['added', 'changed', 'removed']: 
