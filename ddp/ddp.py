@@ -1,5 +1,35 @@
+import Queue
+import threading
 import ejson
 from exceptions import NotImplementedError
+
+
+class MessageQueue(Queue.Queue):
+    """
+    """
+
+class Worker(threading.Thread):
+    """
+    """
+
+    def __init__(self, queue, subscriptions):
+        self.queue = queue
+        self.subscriptions = subscriptions
+
+    def start(self):
+        while self.active:
+            job = self.queue.get()
+            if job.msg not in ['added', 'changed', 'removed']:
+                continue
+            
+            rec = (job.collection, job.id)
+            sessions = []
+            for sub in self.subscriptions:
+                if not sub.has_rec(rec):
+                    continue
+                sessions.append(sub.session)
+#            for session in sessions:
+                
 
 class Subscription(object):
     """
