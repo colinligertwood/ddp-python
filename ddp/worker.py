@@ -7,6 +7,7 @@ class Worker(threading.Thread):
     def __init__(self, queue, subscriptions):
         self.queue = queue
         self.subscriptions = subscriptions
+        self.active = True
 
     def start(self):
         while self.active:
