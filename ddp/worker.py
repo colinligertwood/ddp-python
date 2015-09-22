@@ -12,9 +12,6 @@ class Worker(threading.Thread):
     def start(self):
         while self.active:
             message = self.queue.get()
-            if message.msg not in ['added', 'changed', 'removed', 'ready', 'result']:
-                continue
-           
             if message.msg in ['added', 'changed', 'removed']: 
                 rec = (message.collection, message.id)
                 for sub in self.subscriptions:
