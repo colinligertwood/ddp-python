@@ -18,28 +18,28 @@ class Worker(threading.Thread):
 
     def start(self):
         while self.active:
-            job = self.queue.get()
-            if job.msg not in ['added', 'changed', 'removed']:
+            message = self.queue.get()
+            if message.msg not in ['added', 'changed', 'removed', 'ready', 'result']:
                 continue
-            
-            rec = (job.collection, job.id)
-            sessions = []
-            for sub in self.subscriptions:
-                if not sub.has_rec(rec):
-                    continue
-                sessions.append(sub.session)
-#            for session in sessions:
-                
+           
+            if message.msg in ['added', 'changed', 'removed']: 
+                rec = (message.collection, message.id)
+                for sub in self.subscriptions:
+                    if not sub.has_rec(rec):
+                        continue
+                    sub.conn.write_message(message)
 
 class Subscription(object):
     """
     """
 
-    def __init__(self, name, session):
-       self.active = True
-       self.recs = []
-       self.session = session
-       self.name = name
+    def __init__(self, id, name, params, conn):
+        self.id = id
+        self.active = True
+        self.recs = []
+        self.conn = conn 
+        self.name = name
+        self.params = params
 
     def has_rec(self, collection, id):
         return (collection,id) in recs
@@ -50,7 +50,7 @@ class Subscription(object):
     def remove_rec(self, collection, id):
         self.recs.remove((collection,id))
 
-    def reset_recs(self):
+    def reset(self):
         self.recs = []
 
     def start(self):
@@ -58,29 +58,6 @@ class Subscription(object):
 
     def stop(self):
         self.active = False
-
-
-class Publication(object):
-    """
-    This isn't in use yet, since I don't plan on publishing
-    collections directly atm.
-    """
-
-    def __init__(self, name):
-        self.active = True
-        self.name = name
-
-    def start(self):
-        self.active = True
-
-    def stop(self):
-        self.active = False
-
-    def collection(self):
-        raise NotImplementedError()
-
-    def methods(self):
-        raise NotImplementedError()
 
 
 class Message(object):

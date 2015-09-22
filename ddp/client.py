@@ -34,10 +34,17 @@ if __name__ == "__main__":
     print client.send_recv(ddp.Ping("yummy"))
 
     # subscribe to product.product
-    #print client.send_recv(ddp.Sub("product.product", {}))
+    params = {
+        "model": "product.product",
+        "domain": [('default_code', 'ilike', '%LSM%')],
+        "fields": ["id", "default_code"]
+    }
+    print client.send(ddp.Sub(1, "someProducts", params))
 
     # execute a method
     ddp_id = '1'
     params = ["product.product", "price_get", [[6443]], {}] 
+    print client.send_recv(ddp.Method("execute", ddp_id, params))
+    params = ["product.product", "write", [[6443], {"notes": "Touched by DDP!"}], {}] 
     print client.send_recv(ddp.Method("execute", ddp_id, params))
 
