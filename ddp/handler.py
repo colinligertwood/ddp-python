@@ -15,25 +15,23 @@ class Handler(tornado.websocket.WebSocketHandler):
 
     def write_message(self, message):
         print "sending message:", message
-        super(Handler, self).write_message(message)
+        super(Handler, self).write_message(ddp.serialize(message))
 
     # Send Message Events
     def send_connect(self, *args, **kwargs):
         raise NotImplementedError()
 
     def send_connected(self, session):
-        message = ddp.Connected(session)
-        self.write_message(ddp.serialize(message))
+        self.write_message(ddp.Connected(session))
 
     def send_failed(self, *args, **kwargs):
-        self.write_message(ddp.serialize(ddp.Failed()))
+        self.write_message(ddp.Failed())
 
     def send_ping(self, *args, **kwargs):
         raise NotImplementedError()
 
     def send_pong(self, id):
-        message = ddp.Pong(id)
-        self.write_message(ddp.serialize(message))
+        self.write_message(ddp.Pong(id))
 
     def send_sub(self, *args, **kwargs):
         raise NotImplementedError()

@@ -21,10 +21,10 @@ class Subscription(object):
         self.params = params
 
     def has_rec(self, collection, id):
-        return (collection,id) in recs
+        return (collection,id) in self.recs
 
     def add_rec(self, collection, id):
-        self.ids.append((collection,id))
+        self.recs.append((collection,id))
 
     def remove_rec(self, collection, id):
         self.recs.remove((collection,id))
