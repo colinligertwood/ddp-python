@@ -40,11 +40,6 @@ if __name__ == "__main__":
         "fields": ["id", "default_code"]
     }
     print client.send(ddp.Sub(1, "someProducts", params))
-
-    # execute a method
-    ddp_id = '1'
-    params = ["product.product", "price_get", [[6443]], {}] 
-    print client.send_recv(ddp.Method("execute", ddp_id, params))
-    params = ["product.product", "write", [[6443], {"notes": "Touched by DDP!"}], {}] 
-    print client.send_recv(ddp.Method("execute", ddp_id, params))
+    while True:
+        print client.recv() 
 

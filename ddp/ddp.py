@@ -45,6 +45,7 @@ class Message(object):
 
     msg = None
     _serialize_args = None
+
     def __init__(self, msg):
         """
         """
