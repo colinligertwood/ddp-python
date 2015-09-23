@@ -33,6 +33,12 @@ if __name__ == "__main__":
     # Send a ping
     print client.send_recv(ddp.Ping("yummy"))
 
+    # Get databases
+    print client.send_recv(ddp.Method('databases', '1'))
+
+    # Login
+    print client.send_recv(ddp.Method('login', '2', ['today', 'zaber', 'vasily00']))
+
     # subscribe to product.product
     params = {
         "model": "product.product",

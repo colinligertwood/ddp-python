@@ -16,33 +16,33 @@ class Worker(threading.Thread):
             message = ddp_message_queue.get()
             if message.msg in ['added']: 
                 rec = (message.collection, message.id)
-                for sub in ddp_subscriptions:
-                    if not sub.has_rec(message.collection, message.id):
+                for subscription in ddp_subscriptions:
+                    if not subscription.has_rec(message.collection, message.id):
                         continue
-                    sub.conn.write_message(message)
+                    subscription.conn.write_message(message)
 
             if message.msg in ['changed', 'removed']: 
                 rec = (message.collection, message.id)
                 for sub in ddp_subscriptions:
-                    if not sub.has_rec(message.collection, message.id):
+                    if not subscription.has_rec(message.collection, message.id):
                         continue
-                    sub.conn.write_message(message)
+                    subscription.conn.write_message(message)
 
             if message.msg in ['ready']:
                 for sub in ddp_subscriptions:
-                    if not sub.id in message.subs:
+                    if not subscription.id in message.subs:
                         continue
-                    sub.conn.write_message(message)
+                    subscription.conn.write_message(message)
 
             if message.msg in ['result']:
                 for sub in ddp_subscriptions:
-                    if not sub.id in message.id:
+                    if not subscription.id in message.id:
                         continue
-                    sub.conn.write_message(message)
+                    subscription.conn.write_message(message)
 
             if message.msg in ['updated']:
                 for sub in ddp_subscriptions:
-                    if not sub.id in message.methods:
+                    if not subscription.id in message.methods:
                         continue
-                    sub.conn.write_message(message)
+                    subscription.conn.write_message(message)
 
