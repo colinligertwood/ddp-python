@@ -4,7 +4,7 @@ import tornado.web
 import socket
 
 class Server(object):
-    def __init__(self, handler, route="/ddp", port=9999):
+    def __init__(self, handler, route="/sockjs", port=9999):
         self.handler = handler
         self.route = route
         self.port = port

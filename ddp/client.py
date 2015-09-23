@@ -22,7 +22,7 @@ class Client(object):
         return self.send_recv(ddp.Connect(session, protocol, [protocol]))
 
 if __name__ == "__main__":
-    client = Client("ws://sys-colin-zerp6:9999/ddp")
+    client = Client("ws://sys-colin-zerp6:9999/sockjs")
     rcvd_obj = client.connect()
     print rcvd_obj
 
