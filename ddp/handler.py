@@ -2,9 +2,11 @@ from exceptions import NotImplementedError
 
 import uuid
 import tornado.websocket
+from sockjs.tornado import SockJSRouter, SockJSConnection
+
 import ddp
 
-class Handler(tornado.websocket.WebSocketHandler):
+class Handler(SockJSConnection):
     """
     Generic DDP Websockets handler. Subclass this and
     override the msg and event handlers you want to use.
@@ -14,8 +16,8 @@ class Handler(tornado.websocket.WebSocketHandler):
     session_id = None
 
     def write_message(self, message):
-        print "sending message:", message
-        super(Handler, self).write_message(ddp.serialize(message))
+	self.send(ddp.serialize(message))
+        print "{} >>> {}".format(self.session_id, message)
 
     # Send Message Events
     def send_connect(self, *args, **kwargs):
@@ -69,17 +71,12 @@ class Handler(tornado.websocket.WebSocketHandler):
 
     # Received Message event Handlers
     def on_connect(self, message):
-        if message.session:
-            if message.session in self.sessions:
-                self.session_id = message.session
-                self.session = self.sessions[message.session]
-                self.send_connected(self.session_id)
-            else:
-                self.send_failed()
+        if message.session in self.sessions:
+            self.session_id = message.session
+            self.send_connected(self.session_id)
         else:
             self.session_id = str(uuid.uuid4())
             self.sessions[self.session_id] = {}
-            self.session = self.sessions[self.session_id]
             self.send_connected(self.session_id)
     
     def on_connected(self, message):
@@ -133,8 +130,8 @@ class Handler(tornado.websocket.WebSocketHandler):
         DDP Deserialize the message and pass it on to the
         appropriate received message handler.
         """
-        print "received message: ", message
         message = ddp.deserialize(message)
+        print "{} <<< {}".format(self.session_id, message)
         if message.msg == 'connect':
             self.on_connect(message)
         elif message.msg == 'connected':

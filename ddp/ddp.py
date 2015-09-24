@@ -56,6 +56,8 @@ class Message(object):
         """
         message_dict = {'msg': self.msg}
         for arg in self._serialize_args:
+            if arg == 'error' and not self.error:
+                continue
             message_dict[arg] = self.__dict__.get(arg, None)
         return ejson.dumps(message_dict)
 
@@ -90,7 +92,7 @@ class Connected(Message):
 
 class Failed(Message):
     _serialize_args = ("version",)
-    def __init__(self, version='1.0'):
+    def __init__(self, version='1'):
         """
         version: string (a suggested protocol version to connect with)
         """
@@ -301,5 +303,5 @@ def deserialize(msg_raw):
     if msg_type not in msg_types:
         raise Exception("Invalid message type")
     obj = msg_types[msg_type]
-    return obj(*[msg[arg] for arg in obj._serialize_args])
+    return obj(*[msg.get(arg) for arg in obj._serialize_args])
 
