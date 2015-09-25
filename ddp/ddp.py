@@ -4,10 +4,6 @@ import ejson
 from exceptions import NotImplementedError
 
 
-class MessageQueue(Queue.Queue):
-    """
-    """
-
 class Message(object):
     """
     """

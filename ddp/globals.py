@@ -1,5 +1,6 @@
-import ddp
-import Queue
-ddp_message_queue = ddp.MessageQueue()
-ddp_subscriptions = []
+from message_queue import MessageQueue
+from subscription_pool import SubscriptionPool
+
+ddp_message_queue = MessageQueue()
+ddp_subscriptions = SubscriptionPool()
 
