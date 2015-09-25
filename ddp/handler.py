@@ -17,7 +17,7 @@ class Handler(SockJSConnection):
 
     def write_message(self, message):
 	self.send(ddp.serialize(message))
-        print "{} >>> {}".format(self.session_id, message)
+    #print "{} >>> {}".format(self.session_id, message)
 
     # Send Message Events
     def send_connect(self, *args, **kwargs):
@@ -131,7 +131,7 @@ class Handler(SockJSConnection):
         appropriate received message handler.
         """
         message = ddp.deserialize(message)
-        print "{} <<< {}".format(self.session_id, message)
+        #print "{} <<< {}".format(self.session_id, message)
         if message.msg == 'connect':
             self.on_connect(message)
         elif message.msg == 'connected':
