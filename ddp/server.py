@@ -15,7 +15,6 @@ class Server(object):
             if "websocket" in url[0]:
                 newurls.append(url)
             newurls.append((url[0].replace(self.baseurl, self.baseurl + '/sockjs'), url[1], url[2]))
-        print newurls
         router._transport_urls = newurls
         self.application = tornado.web.Application(router.urls)
 
