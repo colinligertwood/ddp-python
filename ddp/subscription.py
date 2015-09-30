@@ -32,7 +32,8 @@ class Subscription(object):
     def on_added(self, message):
         if not self.has_rec(message.collection, message.id):
             self.add_rec(message.collection, message.id)
-        self.conn.write_message(message)
+            self.conn.write_message(message)
+
 
     def on_changed(self, message):
         if self.has_rec(message.collection, message.id):
