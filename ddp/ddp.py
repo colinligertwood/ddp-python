@@ -144,7 +144,6 @@ class Changed(Message):
         self.fields = fields
         self.cleared = cleared
 
-
 class Removed(Message):
     _serialize_args = ("collection", "id")
     def __init__(self, collection, id):

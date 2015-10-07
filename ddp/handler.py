@@ -15,9 +15,29 @@ class Handler(SockJSConnection):
     sessions = {}
     session_id = None
 
+    # A list of collection records/fields this connection
+    # has already received. Useful for amending already
+    # added data from secondary subscriptions to an already
+    # subscribed collection. Also prevents invalidation of
+    # Added messages with same collection/ID when amending
+    # data by sending them as a Changed.
+    recs = {}
+
+    def has_rec(self, collection, id):
+        return (collection,id) in self.recs.keys()
+
+    def add_rec(self, collection, id, fieldnames=[]):
+        if self.has_rec(collection, id):
+            self.recs[(collection,id)] = list(set(self.recs[(collection,id)]).union(set(fieldnames)))
+        else:
+            self.recs[(collection,id)] = fieldnames
+
+    def remove_rec(self, collection, id):
+        del self.recs[(collection,id)]
+ 
     def write_message(self, message):
-	self.send(ddp.serialize(message))
-    #print "{} >>> {}".format(self.session_id, message)
+    	self.send(ddp.serialize(message))
+        print "{} >>> {}".format(self.session_id, message)
 
     # Send Message Events
     def send_connect(self, *args, **kwargs):
@@ -131,7 +151,7 @@ class Handler(SockJSConnection):
         appropriate received message handler.
         """
         message = ddp.deserialize(message)
-        #print "{} <<< {}".format(self.session_id, message)
+        print "{} <<< {}".format(self.session_id, message)
         if message.msg == 'connect':
             self.on_connect(message)
         elif message.msg == 'connected':
