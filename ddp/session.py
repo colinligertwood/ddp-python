@@ -1,5 +1,20 @@
-class Session(Object):
+import uuid
+
+class Session(object):
+
     def __init__(self):
-        pass
-    
-    
+        self.ddp_session_id = str(uuid.uuid4())
+        self.recs = {}
+
+    def has_rec(self, collection, id):
+        return (collection,id) in self.recs.keys()
+
+    def add_rec(self, collection, id, fieldnames=[]):
+        if self.has_rec(collection, id):
+            self.recs[(collection,id)] = list(set(self.recs[(collection,id)]).union(set(fieldnames)))
+        else:
+            self.recs[(collection,id)] = fieldnames
+
+    def remove_rec(self, collection, id):
+        del self.recs[(collection,id)]
+ 

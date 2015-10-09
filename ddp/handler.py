@@ -5,39 +5,23 @@ import tornado.websocket
 from sockjs.tornado import SockJSRouter, SockJSConnection
 
 import ddp
+from session import Session
+from globals import ddp_subscriptions
 
 class Handler(SockJSConnection):
     """
     Generic DDP Websockets handler. Subclass this and
     override the msg and event handlers you want to use.
     """
-    clients = []
-    sessions = {}
-    session_id = None
+    ddp_clients = []
+    ddp_sessions = {}
+    ddp_session_id = None
+    ddp_session = None
 
-    # A list of collection records/fields this connection
-    # has already received. Useful for amending already
-    # added data from secondary subscriptions to an already
-    # subscribed collection. Also prevents invalidation of
-    # Added messages with same collection/ID when amending
-    # data by sending them as a Changed.
-    recs = {}
 
-    def has_rec(self, collection, id):
-        return (collection,id) in self.recs.keys()
-
-    def add_rec(self, collection, id, fieldnames=[]):
-        if self.has_rec(collection, id):
-            self.recs[(collection,id)] = list(set(self.recs[(collection,id)]).union(set(fieldnames)))
-        else:
-            self.recs[(collection,id)] = fieldnames
-
-    def remove_rec(self, collection, id):
-        del self.recs[(collection,id)]
- 
     def write_message(self, message):
     	self.send(ddp.serialize(message))
-        print "{} >>> {}".format(self.session_id, message)
+        #print "{} >>> {}".format(self.ddp_session_id, message)
 
     # Send Message Events
     def send_connect(self, *args, **kwargs):
@@ -91,13 +75,14 @@ class Handler(SockJSConnection):
 
     # Received Message event Handlers
     def on_connect(self, message):
-        if message.session in self.sessions:
-            self.session_id = message.session
-            self.send_connected(self.session_id)
+        if message.session in self.ddp_sessions:
+            self.ddp_session = self.ddp_sessions[message.session]
+            self.send_connected(self.ddp_session.ddp_session_id)
         else:
-            self.session_id = str(uuid.uuid4())
-            self.sessions[self.session_id] = {}
-            self.send_connected(self.session_id)
+            session = Session()
+            self.ddp_sessions[session.ddp_session_id] = session
+            self.ddp_session = session
+            self.send_connected(self.ddp_session.ddp_session_id)
     
     def on_connected(self, message):
         raise NotImplementedError()
@@ -115,7 +100,8 @@ class Handler(SockJSConnection):
         raise NotImplementedError()
 
     def on_unsub(self, message):
-        raise NotImplementedError()
+        global ddp_subscriptions
+        ddp_subscriptions.remove_id(message.id)
 
     def on_added(self, message):
         raise NotImplementedError()
@@ -151,7 +137,7 @@ class Handler(SockJSConnection):
         appropriate received message handler.
         """
         message = ddp.deserialize(message)
-        print "{} <<< {}".format(self.session_id, message)
+        #print "{} <<< {}".format(self.ddp_session_id, message)
         if message.msg == 'connect':
             self.on_connect(message)
         elif message.msg == 'connected':

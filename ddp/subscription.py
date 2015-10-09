@@ -17,15 +17,15 @@ class Subscription(object):
         self.active = False
 
     def on_added(self, message):
-        self.conn.add_rec(message.collection, message.id, message.fields.keys())
+        self.conn.ddp_session.add_rec(message.collection, message.id, message.fields.keys())
         self.conn.write_message(message)
 
     def on_changed(self, message):
-        if self.conn.has_rec(message.collection, message.id):
+        if self.conn.ddp_session.has_rec(message.collection, message.id):
             self.conn.write_message(message)
 
     def on_removed(self, message):
-        if self.conn.has_rec(message.collection, message.id):
+        if self.conn.ddp_session.has_rec(message.collection, message.id):
             self.conn.remove_rec(message.collection, message.id)
             self.conn.write_message(message)
 
