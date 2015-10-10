@@ -40,4 +40,7 @@ class Subscription(object):
     def on_updated(self, message):
         if self.id in message.methods:
             self.conn.write_message(message)
+            self.method = 'reapme'
+
+
 

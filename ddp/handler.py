@@ -6,22 +6,23 @@ from sockjs.tornado import SockJSRouter, SockJSConnection
 
 import ddp
 from session import Session
-from globals import ddp_subscriptions
+from globals import *
 
 class Handler(SockJSConnection):
     """
     Generic DDP Websockets handler. Subclass this and
     override the msg and event handlers you want to use.
     """
-    ddp_clients = []
-    ddp_sessions = {}
-    ddp_session_id = None
     ddp_session = None
-
 
     def write_message(self, message):
     	self.send(ddp.serialize(message))
-        #print "{} >>> {}".format(self.ddp_session_id, message)
+        ddp_session_id = None
+        try:
+            ddp_session_id = self.ddp_session.ddp_session_id
+        except:
+            pass
+        print "{} >>> {}".format(ddp_session_id, message)
 
     # Send Message Events
     def send_connect(self, *args, **kwargs):
@@ -75,12 +76,13 @@ class Handler(SockJSConnection):
 
     # Received Message event Handlers
     def on_connect(self, message):
-        if message.session in self.ddp_sessions:
-            self.ddp_session = self.ddp_sessions[message.session]
+        global ddp_sessions
+        if message.session in ddp_sessions:
+            self.ddp_session = ddp_sessions[message.session]
             self.send_connected(self.ddp_session.ddp_session_id)
         else:
             session = Session()
-            self.ddp_sessions[session.ddp_session_id] = session
+            ddp_sessions[session.ddp_session_id] = session
             self.ddp_session = session
             self.send_connected(self.ddp_session.ddp_session_id)
     
@@ -128,7 +130,9 @@ class Handler(SockJSConnection):
         raise NotImplementedError()
 
     def on_updated(self, message):
-        raise NotImplementedError()
+        self.write_message(message)
+        for subscription_id in message.methods:
+            ddp_subscriptions.remove_id(subscription_id)
 
     # Core Websockets Event Handlers
     def on_message(self, message):
@@ -137,7 +141,16 @@ class Handler(SockJSConnection):
         appropriate received message handler.
         """
         message = ddp.deserialize(message)
-        #print "{} <<< {}".format(self.ddp_session_id, message)
+        ddp_session_id = None
+        try:
+            ddp_session_id = self.ddp_session.ddp_session_id
+        except:
+            pass
+        print "{} <<< {}".format(ddp_session_id, message)
+
+        if self.ddp_session:
+            self.ddp_session.set_expiry(90)
+
         if message.msg == 'connect':
             self.on_connect(message)
         elif message.msg == 'connected':
@@ -172,6 +185,13 @@ class Handler(SockJSConnection):
             self.on_result(message)
         elif message.msg == 'updated':
             self.on_updated(message)
+
+    def on_close(self):
+        global ddp_subscriptions
+        # Clean up subscriptions that belong to this session
+        ddp_subscriptions.remove_session(self.ddp_session.ddp_session_id)
+        # Destroy this session
+        del self.ddp_session
 
     def check_origin(self, origin):
         """

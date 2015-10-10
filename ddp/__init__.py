@@ -7,3 +7,5 @@ from subscription_pool import SubscriptionPool
 from subscription import Subscription
 from message_queue import MessageQueue
 from worker import Worker
+from reaper import Reaper
+

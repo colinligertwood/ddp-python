@@ -10,4 +10,8 @@ class SubscriptionPool(list):
         for subscription in subscriptions:
             self.remove(subscription)
 
+    def remove_session(self, ddp_session_id):
+        subscriptions = [subscription for subscription in self if subscription.conn.ddp_session.ddp_session_id == ddp_session_id]
+        for subscription in subscriptions:
+            self.remove(subscription)
 

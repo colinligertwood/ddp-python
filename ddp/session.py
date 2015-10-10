@@ -1,10 +1,12 @@
 import uuid
+import time
 
 class Session(object):
 
     def __init__(self):
         self.ddp_session_id = str(uuid.uuid4())
         self.recs = {}
+        self.expiry = time.time() + 90
 
     def has_rec(self, collection, id):
         return (collection,id) in self.recs.keys()
@@ -17,4 +19,12 @@ class Session(object):
 
     def remove_rec(self, collection, id):
         del self.recs[(collection,id)]
- 
+
+    def set_expiry(self, secs):
+        self.expiry = time.time() + secs
+
+    def has_expired(self):
+        if self.expiry == None:
+            return False
+        return self.expiry < time.time()
+
