@@ -4,6 +4,26 @@ import ejson
 from exceptions import NotImplementedError
 
 
+class DDPException(Exception):
+    """
+    """
+
+    def __init__(self, error, reason=None, details=None):
+        this.error = error
+        this.reason = reason
+        this.details = details
+
+
+class DDPError(object):
+    """
+    """
+
+    def __init__(self, error, reason=None, details=None):
+        this.error = error
+        this.reason = reason
+        this.details = details
+
+
 class Message(object):
     """
     """
