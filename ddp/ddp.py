@@ -4,24 +4,14 @@ import ejson
 from exceptions import NotImplementedError
 
 
-class DDPException(Exception):
+class DDPError(Exception):
     """
     """
 
     def __init__(self, error, reason=None, details=None):
-        this.error = error
-        this.reason = reason
-        this.details = details
-
-
-class DDPError(object):
-    """
-    """
-
-    def __init__(self, error, reason=None, details=None):
-        this.error = error
-        this.reason = reason
-        this.details = details
+        self.error = error
+        self.reason = reason
+        self.details = details
 
 
 class Message(object):
@@ -242,7 +232,12 @@ class Result(Message):
         """
         super(Result, self).__init__(u"result")
         self.id = id
-        self.error = error
+
+        # We're expecting an instance of DDPError which has a __dict__ attribute that's JSON serializable
+        if error:
+            self.error = error.__dict__
+        else:
+            self.error = None
         self.result = result
 
 
