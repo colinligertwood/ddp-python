@@ -26,7 +26,7 @@ class Subscription(object):
 
     def on_removed(self, message):
         if self.conn.ddp_session.has_rec(message.collection, message.id):
-            self.conn.remove_rec(message.collection, message.id)
+            self.conn.ddp_session.remove_rec(message.collection, message.id)
             self.conn.write_message(message)
 
     def on_ready(self, message):
