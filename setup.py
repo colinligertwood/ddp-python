@@ -2,8 +2,8 @@ from distutils.core import setup
 
 setup(name='ddp',
       version='1.0',
-      description='DDP Implementation with tornado server',
+      description='Distributed Data Protocol (DDP) server',
       author='Colin Ligertwood',
-      author_email='colin@zaber.com',
+      author_email='colin@brainbits.ca',
       packages=['ddp'],
      )
