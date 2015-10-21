@@ -22,7 +22,7 @@ class Handler(SockJSConnection):
             ddp_session_id = self.ddp_session.ddp_session_id
         except:
             pass
-        print "{} >>> {}".format(ddp_session_id, message)
+        #print "{} >>> {}".format(ddp_session_id, message)
 
     # Send Message Events
     def send_connect(self, *args, **kwargs):
@@ -146,7 +146,7 @@ class Handler(SockJSConnection):
             ddp_session_id = self.ddp_session.ddp_session_id
         except:
             pass
-        print "{} <<< {}".format(ddp_session_id, message)
+        #print "{} <<< {}".format(ddp_session_id, message)
 
         if self.ddp_session:
             self.ddp_session.set_expiry(90)
