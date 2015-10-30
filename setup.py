@@ -6,4 +6,10 @@ setup(name='ddp',
       author='Colin Ligertwood',
       author_email='colin@brainbits.ca',
       packages=['ddp'],
+      install_requires=[
+          'tornado',
+          'sockjs-tornado',
+          'websock',
+          'ejson',
+      ]
      )
