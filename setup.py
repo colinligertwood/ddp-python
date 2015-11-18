@@ -9,7 +9,6 @@ setup(name='ddp',
       install_requires=[
           'tornado',
           'sockjs-tornado',
-          'websock',
           'ejson',
       ]
      )
