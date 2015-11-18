@@ -9,6 +9,6 @@ setup(name='ddp',
       install_requires=[
           'tornado',
           'sockjs-tornado',
-          'ejson',
+          'meteor-ejson',
       ]
      )
