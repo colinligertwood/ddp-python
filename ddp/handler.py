@@ -2,6 +2,7 @@ from exceptions import NotImplementedError
 
 import uuid
 import tornado.websocket
+from tornado.ioloop import IOLoop
 from sockjs.tornado import SockJSRouter, SockJSConnection
 
 import ddp
@@ -14,15 +15,11 @@ class Handler(SockJSConnection):
     override the msg and event handlers you want to use.
     """
     ddp_session = None
+    def _send(self, message):
+        self.send(message)
 
     def write_message(self, message):
-    	self.send(ddp.serialize(message))
-        ddp_session_id = None
-        try:
-            ddp_session_id = self.ddp_session.ddp_session_id
-        except:
-            pass
-        #print "{} >>> {}".format(ddp_session_id, message)
+        IOLoop.instance().add_callback(self._send, ddp.serialize(message))
 
     # Send Message Events
     def send_connect(self, *args, **kwargs):
