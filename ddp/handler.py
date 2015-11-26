@@ -17,10 +17,11 @@ class Handler(SockJSConnection):
     ddp_session = None
     remote_ip = None
 
-    def on_open(self):
+    def on_open(self, info):
         global ddp_connections
         ddp_connections.append(self)
         self.remote_ip = self.request.remote_ip
+        print info
 
     def _send(self, message):
         self.send(message)
