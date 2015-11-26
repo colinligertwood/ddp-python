@@ -1,4 +1,4 @@
-from globals import __DESTROY__
+from globals import DESTROY_METHOD
 
 class Subscription(object):
     """
@@ -42,7 +42,7 @@ class Subscription(object):
     def on_updated(self, message):
         if self.id in message.methods:
             self.conn.write_message(message)
-            self.method = __DESTROY__
+            self.method = DESTROY_METHOD
 
 
 

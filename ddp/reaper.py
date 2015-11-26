@@ -17,7 +17,7 @@ class Reaper(object):
                     reap_sessions.append(ddp_session_id)
 
             for subscription in ddp_subscriptions:
-                if subscription.method == __DESTROY__:
+                if subscription.method == DESTROY_METHOD:
                     reap_subscriptions.append(subscription.id)
                     
             for ddp_session_id in reap_sessions:
