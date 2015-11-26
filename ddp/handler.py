@@ -20,7 +20,7 @@ class Handler(SockJSConnection):
     def on_open(self, info):
         global ddp_connections
         ddp_connections.append(self)
-        print info
+        self.remote_ip = info.ip
 
     def _send(self, message):
         self.send(message)
