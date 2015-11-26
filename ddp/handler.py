@@ -15,10 +15,12 @@ class Handler(SockJSConnection):
     override the msg and event handlers you want to use.
     """
     ddp_session = None
+    remote_ip = None
 
     def open(self):
         global ddp_connections
         ddp_connections.append(self)
+        self.remote_ip = self.request.remote_ip
 
     def _send(self, message):
         self.send(message)
