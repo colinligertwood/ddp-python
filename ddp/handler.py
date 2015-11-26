@@ -14,11 +14,11 @@ class Handler(SockJSConnection):
     Generic DDP Websockets handler. Subclass this and
     override the msg and event handlers you want to use.
     """
-    connections = []
     ddp_session = None
 
     def open(self):
-        self.connections.append(self)
+        global ddp_connections
+        ddp_connections.append(self)
 
     def _send(self, message):
         self.send(message)
@@ -190,11 +190,12 @@ class Handler(SockJSConnection):
 
     def on_close(self):
         global ddp_subscriptions
+        global ddp_connections
         # Clean up subscriptions that belong to this session
         ddp_subscriptions.remove_session(self.ddp_session.ddp_session_id)
         # Destroy this session
         del self.ddp_session
-        self.connections.remove(self)
+        ddp_connections.remove(self)
 
     def check_origin(self, origin):
         """

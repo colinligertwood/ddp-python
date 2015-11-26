@@ -4,4 +4,5 @@ from subscription_pool import SubscriptionPool
 ddp_message_queue = MessageQueue()
 ddp_subscriptions = SubscriptionPool()
 ddp_sessions = {}
+ddp_connections = []
 
