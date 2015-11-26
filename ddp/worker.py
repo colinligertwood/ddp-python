@@ -14,7 +14,6 @@ class Worker(threading.Thread):
 
         while self.active:
             (message) = ddp_message_queue.dequeue()
-            print message
             for subscription in ddp_subscriptions:
                 if message.msg == 'added':
                     subscription.on_added(message)
