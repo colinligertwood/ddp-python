@@ -4,9 +4,12 @@ import time
 class Session(object):
 
     def __init__(self):
-        self.ddp_session_id = str(uuid.uuid4())
+        self.ddp_session_id = self.gen_session_id()
         self.recs = {}
         self.expiry = time.time() + 90
+
+    def gen_session_id(self):
+        return str(uuid.uuid4())
 
     def has_rec(self, collection, id):
         return (collection,id) in self.recs.keys()
