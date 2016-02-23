@@ -1,7 +1,8 @@
 import threading
+from ddp import Stop
 from globals import *
 
-class Worker(threading.Thread):
+class Worker(object):
     """
     """
 
@@ -34,5 +35,6 @@ class Worker(threading.Thread):
                     subscription.on_updated(message)
 
     def stop(self):
+        ddp_message_queue.enqueue(Stop())
         self.active = False
 

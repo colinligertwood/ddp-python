@@ -23,6 +23,9 @@ class Server(object):
         self.http_server.listen(self.port)
         self.ioloop = tornado.ioloop.IOLoop.instance()
         self.ioloop.start()
+        #HACK Workaround a bug in tornado that prevents server restarts
+        self.ioloop._timeouts = []
+        self.http_server.stop()
 
     def stop(self):
         self.ioloop.stop()

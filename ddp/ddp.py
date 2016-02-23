@@ -39,6 +39,9 @@ class Message(object):
         value = super(Message, self).__repr__()
         return u"{} {}".format(value, self.ejson_serialize())
 
+class Stop(Message):
+    def __init__(self):
+        super(Stop, self).__init__(u"stop")
 
 class Connect(Message):
     _serialize_args = ("session", "version", "support")

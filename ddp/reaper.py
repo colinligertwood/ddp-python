@@ -2,7 +2,7 @@ from time import sleep
 import threading
 from globals import *
 
-class Reaper(threading.Thread):
+class Reaper(object):
     def __init__(self):
         """
         """
