@@ -24,6 +24,8 @@ class Server(object):
         self.ioloop = tornado.ioloop.IOLoop.instance()
         self.ioloop.start()
 
+    def stop(self):
+        self.ioloop.stop()
 
 if __name__ == "__main__":
     import handler

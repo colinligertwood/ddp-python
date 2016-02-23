@@ -33,3 +33,6 @@ class Worker(threading.Thread):
                 elif message.msg == 'updated':
                     subscription.on_updated(message)
 
+    def stop(self):
+        self.active = False
+

@@ -1,5 +1,4 @@
 import Queue
-import threading
 import ejson
 from exceptions import NotImplementedError
 
