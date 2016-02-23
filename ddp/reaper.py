@@ -1,7 +1,8 @@
 from time import sleep
+import threading
 from globals import *
 
-class Reaper(object):
+class Reaper(threading.Thread):
     def __init__(self):
         """
         """
