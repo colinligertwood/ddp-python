@@ -35,6 +35,7 @@ class Worker(object):
                     subscription.on_updated(message)
 
     def stop(self):
+        global ddp_message_queue
         ddp_message_queue.enqueue(Stop())
         self.active = False
 
