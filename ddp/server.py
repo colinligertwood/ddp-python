@@ -3,6 +3,7 @@ import tornado.ioloop
 import tornado.web
 from sockjs.tornado import transports, SockJSRouter
 import socket
+import signal
 
 class Server(object):
     def __init__(self, handler, baseurl, port):
@@ -22,6 +23,7 @@ class Server(object):
         self.http_server = tornado.httpserver.HTTPServer(self.application)
         self.http_server.listen(self.port)
         self.ioloop = tornado.ioloop.IOLoop.instance()
+        signal.signal(signal.SIGINT, lambda sig, frame: self.ioloop.add_callback_from_signal(self.stop))
         self.ioloop.start()
         #HACK Workaround a bug in tornado that prevents server restarts
         self.ioloop._timeouts = []
