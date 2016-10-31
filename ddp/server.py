@@ -1,7 +1,11 @@
-import tornado.httpserver
-import tornado.ioloop
-import tornado.web
-from sockjs.tornado import transports, SockJSRouter
+#import tornado.httpserver
+#import tornado.ioloop
+#import tornado.web as web
+#from sockjs.tornado import transports, SockJSRouter
+from twisted.internet import reactor
+import cyclone.web as web
+from sockjs.cyclone import transports, SockJSRouter
+
 import socket
 import signal
 
@@ -17,23 +21,30 @@ class Server(object):
                 newurls.append(url)
             newurls.append((url[0].replace(self.baseurl, self.baseurl + '/sockjs'), url[1], url[2]))
         router._transport_urls = newurls
-        self.application = tornado.web.Application(router.urls)
+        self.application = web.Application(router.urls)
 
     def start(self):
-        self.http_server = tornado.httpserver.HTTPServer(self.application)
-        self.http_server.listen(self.port)
-        self.ioloop = tornado.ioloop.IOLoop.instance()
-        signal.signal(signal.SIGINT, lambda sig, frame: self.ioloop.add_callback_from_signal(self.stop))
-        self.ioloop.start()
+        #self.http_server = tornado.httpserver.HTTPServer(self.application)
+        #self.http_server.listen(self.port)
+        #self.ioloop = tornado.ioloop.IOLoop.instance()
+        #try:
+        #    self.ioloop.start()
+        #except KeyboardInterrupt:
+        #    self.ioloop.stop()
+        #    raise
+
         #HACK Workaround a bug in tornado that prevents server restarts
-        self.ioloop._timeouts = []
-        self.http_server.stop()
+        #self.ioloop._timeouts = []
+        #self.http_server.stop()
+
+        reactor.listenTCP(self.port, self.application)
+        reactor.run()        
 
     def stop(self):
         self.ioloop.stop()
 
 if __name__ == "__main__":
     import handler
-    server = Server(handler.Handler)
+    server = Server(handler.Handler, "/", 10000)
     server.start()
 

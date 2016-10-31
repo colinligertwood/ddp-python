@@ -1,9 +1,12 @@
 from exceptions import NotImplementedError
 
 import uuid
-import tornado.websocket
-from tornado.ioloop import IOLoop
-from sockjs.tornado import SockJSRouter, SockJSConnection
+#import tornado.websocket
+#from tornado.ioloop import IOLoop
+#from sockjs.tornado import SockJSRouter, SockJSConnection
+from twisted.internet import reactor
+import cyclone
+from sockjs.cyclone import SockJSRouter, SockJSConnection
 
 import ddp
 from session import Session
@@ -26,7 +29,9 @@ class Handler(SockJSConnection):
         self.send(message)
 
     def write_message(self, message):
-        IOLoop.instance().add_callback(self._send, ddp.serialize(message))
+        #IOLoop.instance().add_callback(self._send, ddp.serialize(message))
+        reactor.callLater(self._send, ddp.serialize(message))
+
 
     # Send Message Events
     def send_connect(self, *args, **kwargs):
