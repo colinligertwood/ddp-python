@@ -1,5 +1,6 @@
 import Queue
 import ejson
+import json
 from exceptions import NotImplementedError
 
 
@@ -25,7 +26,7 @@ class Message(object):
         """
         self.msg = msg
 
-    def ejson_serialize(self):
+    def json_serialize(self):
         """
         """
         message_dict = {'msg': self.msg}
@@ -33,11 +34,21 @@ class Message(object):
             if arg == 'error' and not self.error:
                 continue
             message_dict[arg] = self.__dict__.get(arg, None)
-        return ejson.dumps(message_dict)
+        return json.dumps(message_dict)
+
+    def serialize(self, serializer=ejson):
+        """
+        """
+        message_dict = {'msg': self.msg}
+        for arg in self._serialize_args:
+            if arg == 'error' and not self.error:
+                continue
+            message_dict[arg] = self.__dict__.get(arg, None)
+        return serializer.dumps(message_dict)
 
     def __repr__(self):
         value = super(Message, self).__repr__()
-        return u"{} {}".format(value, self.ejson_serialize())
+        return u"{} {}".format(value, self.serialize())
 
 class Stop(Message):
     def __init__(self):
@@ -273,11 +284,11 @@ msg_types = {
     'updated': Updated}
 
 
-def serialize(msg_obj):
-    return msg_obj.ejson_serialize()
+def serialize(msg_obj, serializer=ejson):
+    return msg_obj.serialize(serializer=serializer)
 
-def deserialize(msg_raw):
-    msg = ejson.loads(msg_raw)
+def deserialize(msg_raw, serializer=ejson):
+    msg = serializer.loads(msg_raw)
     msg_type = msg.get("msg", False)
     if not msg_type:
         raise Exception("No message type specified")
